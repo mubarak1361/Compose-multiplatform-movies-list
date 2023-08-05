@@ -16,10 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import viewmodel.MovieListViewModel
+import widget.ErrorContainer
+import widget.LoadingContainer
 
 @Composable
 fun MovieListPage(viewModel: MovieListViewModel) {
-    val state = viewModel.uiState.collectAsState()
+    val uiState = viewModel.uiState.collectAsState()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -29,13 +31,15 @@ fun MovieListPage(viewModel: MovieListViewModel) {
             )
         },
     ) {
-        when(state.value){
-            is MovieListViewModel.UiState.Loading ->{}
+        when(uiState.value){
+            is MovieListViewModel.UiState.Loading ->{
+                LoadingContainer()
+            }
             is MovieListViewModel.UiState.Error ->{
-
+                ErrorContainer((uiState.value as MovieListViewModel.UiState.Error).errorMessage)
             }
             is MovieListViewModel.UiState.Data ->{
-                val movies = (state.value as MovieListViewModel.UiState.Data).movies
+                val movies = (uiState.value as MovieListViewModel.UiState.Data).movies
                 LazyColumn(Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 16.dp)) {
                     items(movies.size) {
                         movieRow(movies[it].title)

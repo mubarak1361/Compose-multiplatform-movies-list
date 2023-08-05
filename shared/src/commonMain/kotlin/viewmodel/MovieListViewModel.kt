@@ -24,7 +24,7 @@ class MovieListViewModel: ViewModel() {
                 val movies = tmdbApi.getAllMovies("US")
                 _uiState.update { UiState.Data(movies.data) }
             } catch (ex: Exception) {
-                _uiState.update { UiState.Error("Api Failure") }
+                _uiState.update { UiState.Error("Api Failure: ${ex.message}") }
             }
         }
     }
