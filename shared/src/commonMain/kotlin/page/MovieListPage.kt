@@ -21,7 +21,7 @@ import widget.LoadingContainer
 
 @Composable
 fun MovieListPage(viewModel: MovieListViewModel) {
-    val uiState = viewModel.uiState.collectAsState()
+    val uiState = viewModel.uiState.collectAsState().value
     Scaffold(
         topBar = {
             TopAppBar(
@@ -31,15 +31,15 @@ fun MovieListPage(viewModel: MovieListViewModel) {
             )
         },
     ) {
-        when(uiState.value){
+        when(uiState){
             is MovieListViewModel.UiState.Loading ->{
                 LoadingContainer()
             }
             is MovieListViewModel.UiState.Error ->{
-                ErrorContainer((uiState.value as MovieListViewModel.UiState.Error).errorMessage)
+                ErrorContainer(uiState.errorMessage)
             }
             is MovieListViewModel.UiState.Data ->{
-                val movies = (uiState.value as MovieListViewModel.UiState.Data).movies
+                val movies = uiState.movies
                 LazyColumn(Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 16.dp)) {
                     items(movies.size) {
                         movieRow(movies[it].title)

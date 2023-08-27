@@ -5,8 +5,11 @@ import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
+import io.ktor.client.plugins.observer.ResponseObserver
 import io.ktor.client.request.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
 import model.MoviesWrapper
 
@@ -15,6 +18,7 @@ class TMDBApi {
     private val httpClient = HttpClient {
         defaultRequest {
             url {
+                url("$BASE_URL/")
                 headers.append("Authorization", "Bearer $API_KEY")
             }
         }
@@ -26,14 +30,16 @@ class TMDBApi {
         install(Logging) {
             level = LogLevel.ALL
         }
+
     }
 
-    suspend fun getAllMovies(region: String): MoviesWrapper {
-        return httpClient.get("$BASE_URL/discover/movie") {
+    suspend fun getAllMovies(region: String): Flow<MoviesWrapper>  = flow{
+        val response = httpClient.get("discover/movie") {
             url {
                 parameters.append("region", region)
             }
-        }.body()
+        }
+        emit(response.body())
     }
 
     companion object {
